@@ -24,5 +24,8 @@ $(BINDIR):
 $(OBJ):
 	mkdir $@
 
+test:
+	bundle exec rspec
+
 clean:
 	$(RM) -r $(BINDIR)/* $(OBJ)/* $(TEST_BIN) *.txt
