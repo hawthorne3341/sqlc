@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "row.h"
-#include "table.h"
+#include "repl.h"
 
 Table* db_open(const char* filename) {
   Pager* pager = pager_open(filename);

@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "pager.h"
+#include "repl.h"
 
 Pager* pager_open (const char* filename) {
   int fd = open(filename,

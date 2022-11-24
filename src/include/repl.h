@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include "cursor.h"
+#include "pager.h"
 #include "row.h"
 #include "table.h"
 #ifndef REPL_H
