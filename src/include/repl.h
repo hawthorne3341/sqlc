@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "node.h"
 #include "cursor.h"
 #include "pager.h"
 #include "row.h"
