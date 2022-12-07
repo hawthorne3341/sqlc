@@ -7,7 +7,11 @@ describe 'database' do
     raw_output = nil
     IO.popen("./bin/sqlc my.sqlc", "r+") do |pipe|
       commands.each do |command|
-        pipe.puts command
+        begin
+          pipe.puts command
+        rescue Errno::EPIPE
+          break
+        end
       end
 
       pipe.close_write
@@ -33,13 +37,15 @@ describe 'database' do
   end
 
   it 'prints error message when table is full' do
-    counter = 0;
     script = (1..1401).map do |i|
       "insert #{i} user#{i} person#{i}@example.com"
     end
     script << ".exit"
     result = run_script(script)   
-    expect(result[-2]).to eq('sqlc > Error: Table full.')
+    expect(result.last(2)).to match_array([
+      "sqlc > Executed.",
+      "sqlc > Need to implement searching an internal node",
+    ])
   end
 
   it 'allows inserting strings that are the maximum length' do
@@ -122,11 +128,44 @@ describe 'database' do
       "sqlc > Executed.",
       "sqlc > Executed.",
       "sqlc > Tree:",
-      "leaf (size 3)",
-      " - 0 : 1",
-      " - 1 : 2",
-      " - 2 : 3",
+      "- leaf (size 3)",
+      "  - 1",
+      "  - 2",
+      "  - 3",      
       "sqlc > "
+    ])
+  end
+
+  it 'allows printing out the structure of a 3-leaf-node btree' do
+    script = (1..14).map do |i|
+      "insert #{i} user#{i} person#{i}@example.com"
+    end
+    script << ".btree"
+    script << "insert 15 user15 person15@example.com"
+    script << ".exit"
+    result = run_script(script)
+
+    expect(result[14...(result.length)]).to match_array([
+      "sqlc > Tree:",
+      "- internal (size 1)",
+      "  - leaf (size 7)",
+      "    - 1",
+      "    - 2",
+      "    - 3",
+      "    - 4",
+      "    - 5",
+      "    - 6",
+      "    - 7",
+      "  - key 7",
+      "  - leaf (size 7)",
+      "    - 8",
+      "    - 9",
+      "    - 10",
+      "    - 11",
+      "    - 12",
+      "    - 13",
+      "    - 14",
+      "sqlc > Need to implement searching an internal node",
     ])
   end
 
@@ -149,7 +188,7 @@ describe 'database' do
   ])
   end
 
-  it 'prints constants' do
+  it 'prints an error message if there is a duplicate id' do
     script = [
       "insert 1 user1 person1@example.com",
       "insert 1 user1 person1@example.com",
