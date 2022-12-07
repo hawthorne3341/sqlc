@@ -44,7 +44,7 @@ describe 'database' do
     result = run_script(script)   
     expect(result.last(2)).to match_array([
       "sqlc > Executed.",
-      "sqlc > Need to implement searching an internal node",
+      "sqlc > Need to implement updating parent after split",
     ])
   end
 
@@ -165,7 +165,8 @@ describe 'database' do
       "    - 12",
       "    - 13",
       "    - 14",
-      "sqlc > Need to implement searching an internal node",
+      "sqlc > Executed.",
+      "sqlc > ",
     ])
   end
 
